@@ -21,18 +21,27 @@ body {
   align-items: center;
 }
 
-.card {
-  width: 90%;
+.app {
+  width: 100%;
   max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* CARTE */
+.card {
+  width: 100%;
   height: 70vh;
+  background: #ddd;
   border-radius: 20px;
   overflow: hidden;
   position: relative;
   box-shadow: 0 15px 30px rgba(0,0,0,0.3);
   touch-action: none;
-  background: #000;
 }
 
+/* IMAGE */
 .card img {
   width: 100%;
   height: 100%;
@@ -40,6 +49,7 @@ body {
   pointer-events: none;
 }
 
+/* INFOS */
 .info {
   position: absolute;
   bottom: 0;
@@ -54,15 +64,14 @@ body {
   pointer-events: none;
 }
 
-/* Labels LIKE / NOPE */
+/* LABELS LIKE / NOPE */
 .label {
   position: absolute;
   top: 20px;
   padding: 8px 14px;
   border: 3px solid;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: bold;
-  text-transform: uppercase;
   opacity: 0;
 }
 
@@ -79,33 +88,70 @@ body {
   border-color: #ff1744;
   transform: rotate(15deg);
 }
+
+/* BOUTONS */
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 20px;
+}
+
+button {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: none;
+  font-size: 30px;
+  cursor: pointer;
+}
+
+.nope {
+  background: #d3d3d3;
+}
+
+.like {
+  background: #ff4d6d;
+  color: white;
+}
 </style>
 </head>
 
 <body>
 
-<div id="card" class="card">
-  <img id="photo">
-  <div class="like-label label" id="likeLabel">LIKE</div>
-  <div class="nope-label label" id="nopeLabel">NOPE</div>
-  <div class="info">
-    <h2 id="name"></h2>
-    <p id="bio"></p>
+<div class="app">
+
+  <div id="card" class="card">
+    <img id="photo">
+
+    <div id="likeLabel" class="label like-label">LIKE</div>
+    <div id="nopeLabel" class="label nope-label">NOPE</div>
+
+    <div class="info">
+      <h2 id="name"></h2>
+      <p id="bio"></p>
+    </div>
   </div>
+
+  <div class="buttons">
+    <button id="nopeBtn" class="nope">❌</button>
+    <button id="likeBtn" class="like">❤️</button>
+  </div>
+
 </div>
 
 <script>
-// Profils
+// PROFILS
 const profiles = [
   { name: "Emma, 25", bio: "Voyages et café ☕", photo: "https://picsum.photos/id/1027/400/600" },
-  { name: "Lucas, 29", bio: "Sport & musique 🎧", photo: "https://picsum.photos/id/1005/400/600" },
-  { name: "Sarah, 27", bio: "Art & photo 📸", photo: "https://picsum.photos/id/1011/400/600" }
+  { name: "Lucas, 29", bio: "Sport et musique 🎧", photo: "https://picsum.photos/id/1005/400/600" },
+  { name: "Sarah, 27", bio: "Art et photo 📸", photo: "https://picsum.photos/id/1011/400/600" }
 ];
 
 let index = 0;
 
 const card = document.getElementById("card");
-const img = document.getElementById("photo");
+const photo = document.getElementById("photo");
 const nameEl = document.getElementById("name");
 const bioEl = document.getElementById("bio");
 const likeLabel = document.getElementById("likeLabel");
@@ -113,7 +159,7 @@ const nopeLabel = document.getElementById("nopeLabel");
 
 function loadProfile() {
   const p = profiles[index];
-  img.src = p.photo;
+  photo.src = p.photo;
   nameEl.textContent = p.name;
   bioEl.textContent = p.bio;
 }
@@ -122,16 +168,17 @@ loadProfile();
 let startX = 0;
 let currentX = 0;
 
-function handleMove(x) {
+// GESTION SWIPE
+function move(x) {
   currentX = x - startX;
-  card.style.transform = `translateX(${currentX}px) rotate(${currentX / 12}deg)`;
+  card.style.transform =
+    `translateX(${currentX}px) rotate(${currentX / 12}deg)`;
 
-  // Indications Tinder
   likeLabel.style.opacity = currentX > 0 ? Math.min(currentX / 100, 1) : 0;
   nopeLabel.style.opacity = currentX < 0 ? Math.min(-currentX / 100, 1) : 0;
 }
 
-function handleRelease() {
+function release() {
   if (currentX > 120) swipe("right");
   else if (currentX < -120) swipe("left");
   else reset();
@@ -143,8 +190,6 @@ function swipe(direction) {
     direction === "right"
       ? "translateX(1000px) rotate(30deg)"
       : "translateX(-1000px) rotate(-30deg)";
-
-  console.log(direction === "right" ? "LIKE ❤️" : "NOPE ❌");
 
   setTimeout(() => {
     index = (index + 1) % profiles.length;
@@ -161,26 +206,30 @@ function reset(hard = false) {
   nopeLabel.style.opacity = 0;
 }
 
-// Mobile
+// MOBILE
 card.addEventListener("touchstart", e => {
   startX = e.touches[0].clientX;
   card.style.transition = "none";
 });
-card.addEventListener("touchmove", e => handleMove(e.touches[0].clientX));
-card.addEventListener("touchend", handleRelease);
+card.addEventListener("touchmove", e => move(e.touches[0].clientX));
+card.addEventListener("touchend", release);
 
-// PC
+// DESKTOP
 card.addEventListener("mousedown", e => {
   startX = e.clientX;
   card.style.transition = "none";
 
-  document.onmousemove = e => handleMove(e.clientX);
+  document.onmousemove = e => move(e.clientX);
   document.onmouseup = () => {
     document.onmousemove = null;
     document.onmouseup = null;
-    handleRelease();
+    release();
   };
 });
+
+// BOUTONS
+document.getElementById("likeBtn").onclick = () => swipe("right");
+document.getElementById("nopeBtn").onclick = () => swipe("left");
 </script>
 
 </body>
