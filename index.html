@@ -16,7 +16,7 @@
 body {
   background: #f2f2f2;
   height: 100vh;
-  overflow: hidden; /* BLOQUE LE SCROLL */
+  overflow: hidden;
 }
 
 .app {
@@ -34,7 +34,7 @@ body {
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 15px 30px rgba(0,0,0,0.3);
-  touch-action: none; /* ✅ OBLIGATOIRE POUR LE SWIPE */
+  touch-action: none;
 }
 
 .card img {
@@ -80,10 +80,10 @@ body {
 <div class="app">
 
   <div class="card" id="card">
-    <img src="https://picsum.photos/500/900" alt="">
+    <img id="photo" src="">
     <div class="info">
-      <h2>Alex, 22</h2>
-      <p>Étudiant en informatique</p>
+      <h2 id="name"></h2>
+      <p id="bio"></p>
     </div>
   </div>
 
@@ -95,29 +95,104 @@ body {
 </div>
 
 <script>
+// ✅ LISTE DES PROFILS
+const profiles = [
+  {
+    name: "Alex, 22",
+    bio: "Étudiant en informatique",
+    photo: "https://picsum.photos/500/900?1"
+  },
+  {
+    name: "Sam, 24",
+    bio: "Design & UX",
+    photo: "https://picsum.photos/500/900?2"
+  },
+  {
+    name: "Chris, 21",
+    bio: "Étudiant en commerce",
+    photo: "https://picsum.photos/500/900?3"
+  },
+  {
+    name: "Jamie, 23",
+    bio: "Développement web",
+    photo: "https://picsum.photos/500/900?4"
+  }
+];
+
+let index = 0;
+
 const card = document.getElementById("card");
+const photo = document.getElementById("photo");
+const nameEl = document.getElementById("name");
+const bioEl = document.getElementById("bio");
 
 let startX = 0;
 let currentX = 0;
 let dragging = false;
 
+// ✅ AFFICHER UN PROFIL
+function showProfile() {
+  const p = profiles[index];
+  photo.src = p.photo;
+  nameEl.textContent = p.name;
+  bioEl.textContent = p.bio;
+  card.style.transform = "translateX(0) rotate(0)";
+}
+
+// ✅ SWIPE
+function swipeRight() {
+  card.style.transform = "translateX(1000px) rotate(25deg)";
+  console.log("LIKE ❤️", profiles[index].name);
+  nextProfile();
+}
+
+function swipeLeft() {
+  card.style.transform = "translateX(-1000px) rotate(-25deg)";
+  console.log("NOPE ❌", profiles[index].name);
+  nextProfile();
+}
+
+function nextProfile() {
+  setTimeout(() => {
+    index = (index + 1) % profiles.length;
+    showProfile();
+  }, 300);
+}
+
+// ✅ GESTION DU TOUCH
 function getX(e) {
   return e.touches ? e.touches[0].clientX : e.clientX;
 }
 
-function start(e) {
+card.addEventListener("touchstart", e => {
   dragging = true;
   startX = getX(e);
   card.style.transition = "none";
-}
+}, { passive: false });
 
-function move(e) {
+card.addEventListener("touchmove", e => {
   if (!dragging) return;
-  e.preventDefault(); // ✅ CLAIR ET INDISPENSABLE
+  e.preventDefault();
   currentX = getX(e) - startX;
   card.style.transform =
     `translateX(${currentX}px) rotate(${currentX / 15}deg)`;
-}
+}, { passive: false });
 
-function end() {
+card.addEventListener("touchend", () => {
   dragging = false;
+  card.style.transition = "transform 0.3s";
+
+  if (currentX > 120) swipeRight();
+  else if (currentX < -120) swipeLeft();
+  else card.style.transform = "translateX(0) rotate(0)";
+
+  currentX = 0;
+});
+
+// ✅ INIT
+showProfile();
+</script>
+
+</body>
+</html>
+``
