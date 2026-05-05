@@ -4,7 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Igalus</title>
-  <link rel="stylesheet" href="style.css">
+
+  <!-- ✅ CSS CORRECTEMENT LIÉ -->
+  style.css
 </head>
 <body>
 
@@ -25,41 +27,8 @@
 
   </div>
 
-  <script>
-  const profiles = [
-    {
-      name: "Emma, 25",
-      bio: "Aime voyager ✈️",
-      photo: "https://picsum.photos/400/600?1"
-    },
-    {
-      name: "Lucas, 29",
-      bio: "Sport & musique 🎵",
-      photo: "https://picsum.photos/400/600?2"
-    },
-    {
-      name: "Sarah, 27",
-      bio: "Art & photo 📸",
-      photo: "https://picsum.photos/400/600?3"
-    }
-  ];
+  <!-- ✅ JS CORRECTEMENT LIÉ -->
+  script.js</script>
 
-  let index = 0;
-
-  const card = document.getElementById("card");
-  const photo = document.getElementById("photo");
-  const nameEl = document.getElementById("name");
-  const bioEl = document.getElementById("bio");
-
-  let startX = 0;
-  let currentX = 0;
-  const SWIPE_LIMIT = 120;
-
-  function loadProfile() {
-    if (index >= profiles.length) {
-      nameEl.textContent = "Plus de profils";
-      bioEl.textContent = "";
-      photo.src = "";
-      return;
-    }
-    const p = profiles[index];
+</body>
+</html>
