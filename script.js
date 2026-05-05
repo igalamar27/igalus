@@ -1,25 +1,13 @@
-/* ========= PROFILS ========= */
+// ================= PROFILS DEMO =================
 const profiles = [
-  {
-    name: "Alex, 23",
-    bio: "Design • Ville • Café",
-    photo: "https://images.unsplash.com/photo-1502685104226-ee32379fefbe"
-  },
-  {
-    name: "Camille, 24",
-    bio: "Communication • Mode",
-    photo: "https://images.unsplash.com/photo-1544005313-94ddf0286df2"
-  },
-  {
-    name: "Jordan, 22",
-    bio: "Commerce • Sport",
-    photo: "https://images.unsplash.com/photo-1527980965255-d3b416303d12"
-  }
+  { name: "Alex, 23", bio: "Design • Ville", photo: "https://images.unsplash.com/photo-1502685104226-ee32379fefbe" },
+  { name: "Camille, 24", bio: "Communication • Mode", photo: "https://images.unsplash.com/photo-1544005313-94ddf0286df2" },
+  { name: "Jordan, 22", bio: "Commerce • Sport", photo: "https://images.unsplash.com/photo-1527980965255-d3b416303d12" }
 ];
 
 let index = 0;
 
-/* ========= DOM ========= */
+// ================= DOM =================
 const card = document.getElementById("card");
 const photo = document.getElementById("photo");
 const nameEl = document.getElementById("name");
@@ -31,10 +19,11 @@ const nopeBtn = document.getElementById("nopeBtn");
 const authBox = document.getElementById("authBox");
 const loginBox = document.getElementById("loginBox");
 
-/* ========= FIREBASE ========= */
+// ================= FIREBASE =================
 const auth = firebase.auth();
+const db = firebase.firestore();
 
-/* ========= PROFIL ========= */
+// ================= PROFIL =================
 function loadProfile() {
   const p = profiles[index];
   photo.src = p.photo;
@@ -42,9 +31,29 @@ function loadProfile() {
   bioEl.textContent = p.bio;
 }
 
-/* ========= SWIPE ========= */
+// ================= AUTH =================
+function register() {
+  auth.createUserWithEmailAndPassword(email.value, password.value)
+    .then(cred => {
+      return db.collection("users").doc(cred.user.uid).set({
+        email: cred.user.email,
+        premium: false,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    })
+    .then(() => authMessage.textContent = "✅ Compte créé")
+    .catch(e => authMessage.textContent = e.message);
+}
+
+function login() {
+  auth.signInWithEmailAndPassword(loginEmail.value, loginPassword.value)
+    .then(() => loginMessage.textContent = "✅ Connecté")
+    .catch(e => loginMessage.textContent = e.message);
+}
+
+// ================= SWIPE =================
 let startX = 0, currentX = 0;
-const SWIPE_LIMIT = 120;
+const LIMIT = 120;
 
 function move(x) {
   currentX = x - startX;
@@ -59,16 +68,13 @@ function release() {
     reset();
     return;
   }
-  if (currentX > SWIPE_LIMIT) swipe();
-  else if (currentX < -SWIPE_LIMIT) swipe();
+  if (Math.abs(currentX) > LIMIT) swipe();
   else reset();
 }
 
 function swipe() {
   card.style.transition = "transform .3s";
-  card.style.transform = currentX > 0
-    ? "translateX(1000px)"
-    : "translateX(-1000px)";
+  card.style.transform = currentX > 0 ? "translateX(1000px)" : "translateX(-1000px)";
   setTimeout(() => {
     index = (index + 1) % profiles.length;
     reset(true);
@@ -84,7 +90,7 @@ function reset(hard=false) {
   nopeLabel.style.opacity = 0;
 }
 
-/* Touch + Mouse */
+// Touch + Mouse
 card.addEventListener("touchstart", e => startX = e.touches[0].clientX);
 card.addEventListener("touchmove", e => move(e.touches[0].clientX));
 card.addEventListener("touchend", release);
@@ -96,32 +102,10 @@ card.addEventListener("mousedown", e => {
     release();
   };
 });
+likeBtn.onclick = swipe;
+nopeBtn.onclick = swipe;
 
-likeBtn.onclick = () => swipe();
-nopeBtn.onclick = () => swipe();
-
-/* ========= AUTH ========= */
-function register() {
-  auth.createUserWithEmailAndPassword(
-    email.value, password.value
-  ).then(() =>
-    authMessage.textContent = "✅ Compte créé"
-  ).catch(e =>
-    authMessage.textContent = e.message
-  );
-}
-
-function login() {
-  auth.signInWithEmailAndPassword(
-    loginEmail.value, loginPassword.value
-  ).then(() =>
-    loginMessage.textContent = "✅ Connecté"
-  ).catch(e =>
-    loginMessage.textContent = e.message
-  );
-}
-
-/* ========= ÉTAT ========= */
+// ================= ÉTAT UTILISATEUR =================
 auth.onAuthStateChanged(user => {
   if (user) {
     authBox.style.display = "none";
