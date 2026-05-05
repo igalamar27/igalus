@@ -1,23 +1,25 @@
+// === PROFILS (photos en ligne pour être sûr que ça marche) ===
 const profiles = [
   {
     name: "Emma, 25",
-    bio: "Aime voyager ✈️",
-    photo: "https://picsum.photos/400/600?1"
+    bio: "Voyages et café ☕",
+    photo: "https://picsum.photos/id/1027/400/600"
   },
   {
     name: "Lucas, 29",
-    bio: "Sport & musique 🎵",
-    photo: "https://picsum.photos/400/600?2"
+    bio: "Sport et musique 🎧",
+    photo: "https://picsum.photos/id/1005/400/600"
   },
   {
     name: "Sarah, 27",
-    bio: "Art & photo 📸",
-    photo: "https://picsum.photos/400/600?3"
+    bio: "Art et photo 📸",
+    photo: "https://picsum.photos/id/1011/400/600"
   }
 ];
 
 let index = 0;
 
+// === ELEMENTS ===
 const card = document.getElementById("card");
 const photo = document.getElementById("photo");
 const nameEl = document.getElementById("name");
@@ -27,13 +29,22 @@ let startX = 0;
 let currentX = 0;
 const SWIPE_LIMIT = 120;
 
+// === CHARGER UN PROFIL ===
 function loadProfile() {
+  if (index >= profiles.length) {
+    nameEl.textContent = "Plus de profils";
+    bioEl.textContent = "";
+    photo.src = "";
+    return;
+  }
+
   const p = profiles[index];
   nameEl.textContent = p.name;
   bioEl.textContent = p.bio;
   photo.src = p.photo;
 }
 
+// === GESTION DU SWIPE ===
 card.addEventListener("pointerdown", e => {
   startX = e.clientX;
   card.style.transition = "none";
@@ -47,33 +58,7 @@ card.addEventListener("pointermove", e => {
 });
 
 card.addEventListener("pointerup", () => {
-  if (currentX > SWIPE_LIMIT) swipe("right");
-  else if (currentX < -SWIPE_LIMIT) swipe("left");
-  else resetCard();
-});
-
-function swipe(dir) {
-  card.style.transition = "transform 0.3s";
-  card.style.transform =
-    dir === "right"
-      ? "translateX(1000px) rotate(30deg)"
-      : "translateX(-1000px) rotate(-30deg)";
-  
-  setTimeout(() => {
-    index++;
-    resetCard();
-    loadProfile();
-  }, 300);
-}
-
-function resetCard() {
-  card.style.transition = "none";
-  card.style.transform = "translateX(0)";
-  currentX = 0;
-}
-
-document.getElementById("like").onclick = () => swipe("right");
-document.getElementById("nope").onclick = () => swipe("left");
-
-loadProfile();
-``
+  if (currentX > SWIPE_LIMIT) {
+    swipe("right");
+  } else if (currentX < -SWIPE_LIMIT) {
+    swipe("left");
