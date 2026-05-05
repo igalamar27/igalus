@@ -1,7 +1,11 @@
-// ===============================
-// I G A L U S  –  SCRIPT COMPLET
-// ===============================
+/*************************
+ *  I G A L U S
+ *  Script complet
+ *************************/
 
+/* ======================
+   PROFILS (démo)
+====================== */
 const profiles = [
   {
     name: "Alex, 23",
@@ -17,32 +21,43 @@ const profiles = [
     name: "Jordan, 22",
     bio: "École de commerce • Sport & voyages",
     photo: "https://images.unsplash.com/photo-1527980965255-d3b416303d12?auto=format&fit=crop&w=400&h=600"
-  },
-  {
-    name: "Lina, 25",
-    bio: "Architecture • Art contemporain",
-    photo: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=400&h=600"
-  },
-  {
-    name: "Noah, 26",
-    bio: "Ingénierie • Tech vibes • Créatif",
-    photo: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=400&h=600"
   }
 ];
 
 let index = 0;
 
-// DOM
+/* ======================
+   ÉLÉMENTS DOM
+====================== */
+// Carte & profil
 const card = document.getElementById("card");
 const photo = document.getElementById("photo");
 const nameEl = document.getElementById("name");
 const bioEl = document.getElementById("bio");
+
+// Labels
 const likeLabel = document.getElementById("likeLabel");
 const nopeLabel = document.getElementById("nopeLabel");
+
+// Boutons
 const likeBtn = document.getElementById("likeBtn");
 const nopeBtn = document.getElementById("nopeBtn");
 
-// Load profile
+// Auth UI
+const authBox = document.getElementById("authBox");
+const loginBox = document.getElementById("loginBox");
+
+/* ======================
+   FIREBASE AUTH
+====================== */
+// Ces objets existent parce que
+// firebase.initializeApp(...) est dans index.html
+// et Firebase SDK est chargé
+const auth = firebase.auth();
+
+/* ======================
+   AFFICHER UN PROFIL
+====================== */
 function loadProfile() {
   const p = profiles[index];
   photo.src = p.photo;
@@ -51,10 +66,16 @@ function loadProfile() {
 }
 loadProfile();
 
-// Swipe logic
+/* ======================
+   SWIPE LOGIC
+====================== */
 let startX = 0;
 let currentX = 0;
 const SWIPE_LIMIT = 120;
+
+function isLoggedIn() {
+  return auth.currentUser !== null;
+}
 
 function move(x) {
   currentX = x - startX;
@@ -66,6 +87,12 @@ function move(x) {
 }
 
 function release() {
+  if (!isLoggedIn()) {
+    alert("Vous devez vous inscrire ou vous connecter");
+    reset();
+    return;
+  }
+
   if (currentX > SWIPE_LIMIT) swipe("right");
   else if (currentX < -SWIPE_LIMIT) swipe("left");
   else reset();
@@ -105,6 +132,7 @@ card.addEventListener("touchend", release);
 card.addEventListener("mousedown", e => {
   startX = e.clientX;
   card.style.transition = "none";
+
   document.onmousemove = e => move(e.clientX);
   document.onmouseup = () => {
     document.onmousemove = null;
@@ -113,55 +141,46 @@ card.addEventListener("mousedown", e => {
   };
 });
 
-// Buttons
+// Boutons
 likeBtn.onclick = () => swipe("right");
 nopeBtn.onclick = () => swipe("left");
+
+/* ======================
+   INSCRIPTION
+====================== */
 function register() {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
-  const message = document.getElementById("authMessage");
+  const msg = document.getElementById("authMessage");
 
   auth.createUserWithEmailAndPassword(email, password)
-    .then(userCredential => {
-      message.style.color = "green";
-      message.textContent = "✅ Compte créé avec succès";
-      console.log("Utilisateur créé :", userCredential.user.email);
+    .then(() => {
+      msg.textContent = "✅ Compte créé";
+      msg.style.color = "green";
     })
-    .catch(error => {
-      message.style.color = "red";
-      message.textContent = error.message;
-      console.error(error);
+    .catch(err => {
+      msg.textContent = err.message;
+      msg.style.color = "red";
     });
 }
-auth.onAuthStateChanged(user => {
-  if (user) {
-    console.log("✅ Utilisateur connecté :", user.email);
-    document.getElementById("authBox").style.display = "none";
-  } else {
-    console.log("❌ Aucun utilisateur connecté");
-  }
-});
+
+/* ======================
+   CONNEXION
+====================== */
 function login() {
   const email = document.getElementById("loginEmail").value;
   const password = document.getElementById("loginPassword").value;
-  const message = document.getElementById("loginMessage");
-
-  if (!email || !password) {
-    message.textContent = "Veuillez remplir tous les champs";
-    message.style.color = "red";
-    return;
-  }
+  const msg = document.getElementById("loginMessage");
 
   auth.signInWithEmailAndPassword(email, password)
-    .then(userCredential => {
-      message.style.color = "green";
-      message.textContent = "✅ Connecté avec succès";
-      console.log("Utilisateur connecté :", userCredential.user.email);
+    .then(() => {
+      msg.textContent = "✅ Connecté";
+      msg.style.color = "green";
     })
-    .catch(error => {
-      message.style.color = "red";
-      message.textContent = error.message;
-      console.error(error);
+    .catch(err => {
+      msg.textContent = err.message;
+      msg.style.color = "red";
     });
 }
-``
+
+/* ======================
