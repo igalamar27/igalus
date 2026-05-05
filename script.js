@@ -1,20 +1,18 @@
-/*************************
- *  I G A L U S
- *  Script complet
- *************************/
+/* =========================================
+   I G A L U S  –  SCRIPT COMPLET
+   Swipe + Firebase Auth
+========================================= */
 
-/* ======================
-   PROFILS (démo)
-====================== */
+/* ========= PROFILS DE DÉMO ========= */
 const profiles = [
   {
     name: "Alex, 23",
-    bio: "Master design • Café • Lifestyle urbain",
+    bio: "Master design • Lifestyle urbain",
     photo: "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?auto=format&fit=crop&w=400&h=600"
   },
   {
     name: "Camille, 24",
-    bio: "Communication • Mode • Photo",
+    bio: "Communication • Mode & photo",
     photo: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&h=600"
   },
   {
@@ -26,38 +24,26 @@ const profiles = [
 
 let index = 0;
 
-/* ======================
-   ÉLÉMENTS DOM
-====================== */
-// Carte & profil
-const card = document.getElementById("card");
-const photo = document.getElementById("photo");
-const nameEl = document.getElementById("name");
-const bioEl = document.getElementById("bio");
+/* ========= DOM ========= */
+const card      = document.getElementById("card");
+const photo     = document.getElementById("photo");
+const nameEl    = document.getElementById("name");
+const bioEl     = document.getElementById("bio");
 
-// Labels
 const likeLabel = document.getElementById("likeLabel");
 const nopeLabel = document.getElementById("nopeLabel");
 
-// Boutons
-const likeBtn = document.getElementById("likeBtn");
-const nopeBtn = document.getElementById("nopeBtn");
+const likeBtn   = document.getElementById("likeBtn");
+const nopeBtn   = document.getElementById("nopeBtn");
 
-// Auth UI
-const authBox = document.getElementById("authBox");
-const loginBox = document.getElementById("loginBox");
+const authBox   = document.getElementById("authBox");
+const loginBox  = document.getElementById("loginBox");
 
-/* ======================
-   FIREBASE AUTH
-====================== */
-// Ces objets existent parce que
-// firebase.initializeApp(...) est dans index.html
-// et Firebase SDK est chargé
+/* ========= FIREBASE AUTH ========= */
+// Firebase est déjà initialisé dans index.html
 const auth = firebase.auth();
 
-/* ======================
-   AFFICHER UN PROFIL
-====================== */
+/* ========= AFFICHER PROFIL ========= */
 function loadProfile() {
   const p = profiles[index];
   photo.src = p.photo;
@@ -66,9 +52,7 @@ function loadProfile() {
 }
 loadProfile();
 
-/* ======================
-   SWIPE LOGIC
-====================== */
+/* ========= SWIPE ========= */
 let startX = 0;
 let currentX = 0;
 const SWIPE_LIMIT = 120;
@@ -88,7 +72,7 @@ function move(x) {
 
 function release() {
   if (!isLoggedIn()) {
-    alert("Vous devez vous inscrire ou vous connecter");
+    alert("Vous devez vous connecter pour swiper");
     reset();
     return;
   }
@@ -120,7 +104,7 @@ function reset(hard = false) {
   nopeLabel.style.opacity = 0;
 }
 
-// Mobile
+/* === Mobile === */
 card.addEventListener("touchstart", e => {
   startX = e.touches[0].clientX;
   card.style.transition = "none";
@@ -128,7 +112,7 @@ card.addEventListener("touchstart", e => {
 card.addEventListener("touchmove", e => move(e.touches[0].clientX));
 card.addEventListener("touchend", release);
 
-// Desktop
+/* === Desktop === */
 card.addEventListener("mousedown", e => {
   startX = e.clientX;
   card.style.transition = "none";
@@ -141,13 +125,11 @@ card.addEventListener("mousedown", e => {
   };
 });
 
-// Boutons
+/* === Boutons === */
 likeBtn.onclick = () => swipe("right");
 nopeBtn.onclick = () => swipe("left");
 
-/* ======================
-   INSCRIPTION
-====================== */
+/* ========= INSCRIPTION ========= */
 function register() {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
@@ -158,15 +140,14 @@ function register() {
       msg.textContent = "✅ Compte créé";
       msg.style.color = "green";
     })
-    .catch(err => {
-      msg.textContent = err.message;
+    .catch(error => {
+      msg.textContent = error.message;
       msg.style.color = "red";
+      console.error(error);
     });
 }
 
-/* ======================
-   CONNEXION
-====================== */
+/* ========= CONNEXION ========= */
 function login() {
   const email = document.getElementById("loginEmail").value;
   const password = document.getElementById("loginPassword").value;
@@ -177,10 +158,27 @@ function login() {
       msg.textContent = "✅ Connecté";
       msg.style.color = "green";
     })
-    .catch(err => {
-      msg.textContent = err.message;
+    .catch(error => {
+      msg.textContent = error.message;
       msg.style.color = "red";
+      console.error(error);
     });
 }
 
-/* ======================
+/* ========= DÉCONNEXION ========= */
+function logout() {
+  auth.signOut().then(() => location.reload());
+}
+
+/* ========= ÉTAT UTILISATEUR ========= */
+auth.onAuthStateChanged(user => {
+  if (user) {
+    console.log("✅ Connecté :", user.email);
+    authBox && (authBox.style.display = "none");
+    loginBox && (loginBox.style.display = "none");
+  } else {
+    console.log("❌ Non connecté");
+    authBox && (authBox.style.display = "block");
+    loginBox && (loginBox.style.display = "block");
+  }
+});
