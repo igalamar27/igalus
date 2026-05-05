@@ -1,10 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Igalus</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f2f2f2;
+      height: 100vh;
+    }
+
+    .app {
+      max-width: 420px;
+      margin: auto;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .card {
+      position: relative;
+      height: 75vh;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+    }
+
+    .card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .info {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      padding: 20px;
+      color: white;
+      background: linear-gradient(
+        to top,
+        rgba(0,0,0,0.8),
+        rgba(0,0,0,0)
+      );
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      margin: 15px 0;
+    }
+
+    .buttons button {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      font-size: 32px;
+      border: none;
+      margin: 0 25px;
+    }
+
+    .like {
+      background: #ff4d6d;
+      color: white;
+    }
+
+    .nope {
+      background: #d3d3d3;
+    }
+  </style>
+</head>
+
 <body>
 
 <div class="app">
 
   <div class="card">
     <img src="https://picsum.photos/500/900" alt="Profil">
-
     <div class="info">
       <h2>Alex, 22</h2>
       <p>Étudiant en informatique</p>
@@ -19,3 +100,4 @@
 </div>
 
 </body>
+</html>
