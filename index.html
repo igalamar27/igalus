@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Test Firebase Igalus</title>
+<meta charset="UTF-8">
+<title>Test Firebase</title>
 </head>
 <body>
 
-<h2>Test Firebase</h2>
+<h2>Test Firebase – Inscription</h2>
 
 <input id="email" type="email" placeholder="Email"><br><br>
 <input id="password" type="password" placeholder="Mot de passe"><br><br>
@@ -14,45 +14,31 @@
 
 <p id="msg"></p>
 
-<!-- ✅ FIREBASE DOIT ÊTRE CHARGÉ COMME ÇA (PAS AUTREMENT) -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<!-- ✅ FIREBASE SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
+<!-- ✅ FIREBASE CONFIG -->
 <script>
-  // 🔑 COLLE ICI LE firebaseConfig EXACT depuis Firebase Console
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyD7ZEgRQ08vY6-5itHp1c321etYz81q4_k",
-  authDomain: "igalus-web.firebaseapp.com",
-  projectId: "igalus-web",
-  storageBucket: "igalus-web.firebasestorage.app",
-  messagingSenderId: "412766022663",
-  appId: "1:412766022663:web:8d11c9b50f6f7478b90ea2",
-  measurementId: "G-Z6G9MM12NZ"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+  // ⚠️ COLLE ICI TON firebaseConfig EXACT (SANS MODIFIER)
+  const firebaseConfig = {
+    /* COLLE LE TIEN ICI */
+  };
 
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
 
-  console.log("✅ Firebase est bien chargé");
+  console.log("✅ Firebase chargé");
 
   document.getElementById("registerBtn").onclick = () => {
     auth.createUserWithEmailAndPassword(
       email.value,
       password.value
-    ).then(() => {
-      msg.textContent = "✅ Compte créé avec succès";
-    }).catch(e => {
+    )
+    .then(() => {
+      msg.textContent = "✅ Compte créé";
+    })
+    .catch(e => {
       msg.textContent = e.message;
       console.error(e);
     });
