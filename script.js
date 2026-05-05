@@ -133,3 +133,11 @@ function register() {
       console.error(error);
     });
 }
+auth.onAuthStateChanged(user => {
+  if (user) {
+    console.log("✅ Utilisateur connecté :", user.email);
+    document.getElementById("authBox").style.display = "none";
+  } else {
+    console.log("❌ Aucun utilisateur connecté");
+  }
+});
