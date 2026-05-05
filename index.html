@@ -12,7 +12,68 @@
       padding: 0;
       font-family: Arial, sans-serif;
     }
+<script>
+const card = document.querySelector('.card');
 
+let startX = 0;
+let currentX = 0;
+let dragging = false;
+
+card.addEventListener('touchstart', startDrag);
+card.addEventListener('mousedown', startDrag);
+
+function startDrag(e) {
+  dragging = true;
+  startX = e.touches ? e.touches[0].clientX : e.clientX;
+  card.style.transition = 'none';
+
+  document.addEventListener('touchmove', onDrag);
+  document.addEventListener('mousemove', onDrag);
+  document.addEventListener('touchend', endDrag);
+  document.addEventListener('mouseup', endDrag);
+}
+
+function onDrag(e) {
+  if (!dragging) return;
+  currentX = (e.touches ? e.touches[0].clientX : e.clientX) - startX;
+  card.style.transform = `translateX(${currentX}px) rotate(${currentX / 15}deg)`;
+}
+
+function endDrag() {
+  dragging = false;
+  card.style.transition = 'transform 0.3s';
+
+  if (currentX > 120) {
+    swipeRight();
+  } else if (currentX < -120) {
+    swipeLeft();
+  } else {
+    resetCard();
+  }
+
+  document.removeEventListener('touchmove', onDrag);
+  document.removeEventListener('mousemove', onDrag);
+  document.removeEventListener('touchend', endDrag);
+  document.removeEventListener('mouseup', endDrag);
+}
+
+function swipeRight() {
+  card.style.transform = 'translateX(1000px) rotate(30deg)';
+  setTimeout(resetCard, 300);
+  console.log('LIKE ❤️');
+}
+
+function swipeLeft() {
+  card.style.transform = 'translateX(-1000px) rotate(-30deg)';
+  setTimeout(resetCard, 300);
+  console.log('NOPE ❌');
+}
+
+function resetCard() {
+  currentX = 0;
+  card.style.transform = 'translateX(0) rotate(0)';
+}
+</script>
     body {
       background: #f2f2f2;
       height: 100vh;
