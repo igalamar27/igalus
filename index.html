@@ -1,51 +1,65 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Test Drag</title>
-
-<style>
-body {
-  margin: 0;
-  height: 100vh;
-  background: #eee;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-#box {
-  width: 200px;
-  height: 300px;
-  background: red;
-  border-radius: 20px;
-  touch-action: none;
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Igalus</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<div id="box"></div>
+  <div class="app">
 
-<script>
-const box = document.getElementById("box");
+    <div id="card" class="card">
+      <img id="photo" src="" alt="profil">
+      <div class="info">
+        <h2 id="name"></h2>
+        <p id="bio"></p>
+      </div>
+    </div>
 
-let startX = 0;
-let startY = 0;
+    <div class="buttons">
+      <button class="nope" id="nope">❌</button>
+      <button class="like" id="like">❤️</button>
+    </div>
 
-box.addEventListener("pointerdown", e => {
-  startX = e.clientX;
-  startY = e.clientY;
-  box.setPointerCapture(e.pointerId);
-});
+  </div>
 
-box.addEventListener("pointermove", e => {
-  box.style.transform =
-    `translate(${e.clientX - startX}px, ${e.clientY - startY}px)`;
-});
-</script>
+  <script>
+  const profiles = [
+    {
+      name: "Emma, 25",
+      bio: "Aime voyager ✈️",
+      photo: "https://picsum.photos/400/600?1"
+    },
+    {
+      name: "Lucas, 29",
+      bio: "Sport & musique 🎵",
+      photo: "https://picsum.photos/400/600?2"
+    },
+    {
+      name: "Sarah, 27",
+      bio: "Art & photo 📸",
+      photo: "https://picsum.photos/400/600?3"
+    }
+  ];
 
-</body>
-</html>
+  let index = 0;
+
+  const card = document.getElementById("card");
+  const photo = document.getElementById("photo");
+  const nameEl = document.getElementById("name");
+  const bioEl = document.getElementById("bio");
+
+  let startX = 0;
+  let currentX = 0;
+  const SWIPE_LIMIT = 120;
+
+  function loadProfile() {
+    if (index >= profiles.length) {
+      nameEl.textContent = "Plus de profils";
+      bioEl.textContent = "";
+      photo.src = "";
+      return;
+    }
+    const p = profiles[index];
