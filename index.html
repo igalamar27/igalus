@@ -1,142 +1,92 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Igalus</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Igalus</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-    }
-<script>
-document.addEventListener("DOMContentLoaded", function () {
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
 
-  const card = document.querySelector(".card");
-  let startX = 0;
-  let currentX = 0;
-  let dragging = false;
+body {
+  background: #f2f2f2;
+  height: 100vh;
+}
 
-  function getX(e) {
-    return e.touches ? e.touches[0].clientX : e.clientX;
-  }
+.app {
+  max-width: 420px;
+  margin: auto;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
 
-  function start(e) {
-    dragging = true;
-    startX = getX(e);
-    card.style.transition = "none";
-  }
+.card {
+  position: relative;
+  height: 75vh;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+  touch-action: pan-y;
+}
 
-  function move(e) {
-    if (!dragging) return;
-    currentX = getX(e) - startX;
-    card.style.transform =
-      `translateX(${currentX}px) rotate(${currentX / 15}deg)`;
-  }
+.card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
-  function end() {
-    dragging = false;
-    card.style.transition = "transform 0.3s";
+.info {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 20px;
+  color: white;
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,0.8),
+    rgba(0,0,0,0)
+  );
+}
 
-    if (currentX > 120) {
-      card.style.transform = "translateX(1000px) rotate(25deg)";
-      console.log("LIKE ❤️");
-    } else if (currentX < -120) {
-      card.style.transform = "translateX(-1000px) rotate(-25deg)";
-      console.log("NOPE ❌");
-    } else {
-      card.style.transform = "translateX(0) rotate(0)";
-    }
+.buttons {
+  display: flex;
+  justify-content: center;
+  margin: 15px 0;
+}
 
-    currentX = 0;
-  }
+.buttons button {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  font-size: 32px;
+  border: none;
+  margin: 0 25px;
+  cursor: pointer;
+}
 
-  card.addEventListener("touchstart", start);
-  card.addEventListener("touchmove", move);
-  card.addEventListener("touchend", end);
+.like {
+  background: #ff4d6d;
+  color: white;
+}
 
-  card.addEventListener("mousedown", start);
-  document.addEventListener("mousemove", move);
-  document.addEventListener("mouseup", end);
-
-});
-</script>
-
-    body {
-      background: #f2f2f2;
-      height: 100vh;
-    }
-
-    .app {
-      max-width: 420px;
-      margin: auto;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .card {
-      position: relative;
-      height: 75vh;
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: 0 15px 30px rgba(0,0,0,0.3);
-    }
-
-    .card img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .info {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      padding: 20px;
-      color: white;
-      background: linear-gradient(
-        to top,
-        rgba(0,0,0,0.8),
-        rgba(0,0,0,0)
-      );
-    }
-
-    .buttons {
-      display: flex;
-      justify-content: center;
-      margin: 15px 0;
-    }
-
-    .buttons button {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      font-size: 32px;
-      border: none;
-      margin: 0 25px;
-    }
-
-    .like {
-      background: #ff4d6d;
-      color: white;
-    }
-
-    .nope {
-      background: #d3d3d3;
-    }
-  </style>
+.nope {
+  background: #d3d3d3;
+}
+</style>
 </head>
 
 <body>
 
 <div class="app">
 
-  <div class="card">
+  <div class="card" id="card">
     <img src="https://picsum.photos/500/900" alt="Profil">
     <div class="info">
       <h2>Alex, 22</h2>
@@ -145,11 +95,77 @@ document.addEventListener("DOMContentLoaded", function () {
   </div>
 
   <div class="buttons">
-    <button class="nope">❌</button>
-    <button class="like">❤️</button>
+    <button class="nope" onclick="swipeLeft()">❌</button>
+    <button class="like" onclick="swipeRight()">❤️</button>
   </div>
 
 </div>
+
+<script>
+const card = document.getElementById("card");
+
+let startX = 0;
+let currentX = 0;
+let dragging = false;
+
+function getX(e) {
+  return e.touches ? e.touches[0].clientX : e.clientX;
+}
+
+function startDrag(e) {
+  dragging = true;
+  startX = getX(e);
+  card.style.transition = "none";
+}
+
+function onDrag(e) {
+  if (!dragging) return;
+  currentX = getX(e) - startX;
+  card.style.transform =
+    `translateX(${currentX}px) rotate(${currentX / 15}deg)`;
+}
+
+function endDrag() {
+  if (!dragging) return;
+  dragging = false;
+  card.style.transition = "transform 0.3s";
+
+  if (currentX > 120) {
+    swipeRight();
+  } else if (currentX < -120) {
+    swipeLeft();
+  } else {
+    card.style.transform = "translateX(0) rotate(0)";
+  }
+
+  currentX = 0;
+}
+
+function swipeRight() {
+  card.style.transform = "translateX(1000px) rotate(25deg)";
+  console.log("LIKE ❤️");
+  setTimeout(resetCard, 300);
+}
+
+function swipeLeft() {
+  card.style.transform = "translateX(-1000px) rotate(-25deg)";
+  console.log("NOPE ❌");
+  setTimeout(resetCard, 300);
+}
+
+function resetCard() {
+  card.style.transition = "none";
+  card.style.transform = "translateX(0) rotate(0)";
+}
+
+card.addEventListener("touchstart", startDrag);
+card.addEventListener("touchmove", onDrag);
+card.addEventListener("touchend", endDrag);
+
+card.addEventListener("mousedown", startDrag);
+document.addEventListener("mousemove", onDrag);
+document.addEventListener("mouseup", endDrag);
+</script>
 
 </body>
 </html>
