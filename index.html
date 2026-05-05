@@ -25,13 +25,11 @@ body {
   width: 90%;
   max-width: 360px;
   height: 70vh;
-  background: white;
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 15px 30px rgba(0,0,0,0.3);
-
   position: relative;
-  touch-action: none; /* 🔴 OBLIGATOIRE */
+  box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+  touch-action: none;
 }
 
 .card img {
@@ -49,7 +47,7 @@ body {
   color: white;
   background: linear-gradient(
     to top,
-    rgba(0,0,0,0.7),
+    rgba(0,0,0,0.75),
     rgba(0,0,0,0)
   );
   pointer-events: none;
@@ -60,61 +58,63 @@ body {
 <body>
 
 <div id="card" class="card">
-  <img src="https://picsum.photos/400/600" alt="profil">
+  <img id="photo">
   <div class="info">
-    <h2>Emma, 25</h2>
-    <p>Aime voyager ☕</p>
+    <h2 id="name"></h2>
+    <p id="bio"></p>
   </div>
 </div>
 
 <script>
-const card = document.getElementById("card");
+// ✅ PROFILS IGLALUS
+const profiles = [
+  {
+    name: "Emma, 25",
+    bio: "Voyages et café ☕",
+    photo: "https://picsum.photos/id/1027/400/600"
+  },
+  {
+    name: "Lucas, 29",
+    bio: "Sport & musique 🎧",
+    photo: "https://picsum.photos/id/1005/400/600"
+  },
+  {
+    name: "Sarah, 27",
+    bio: "Art & photo 📸",
+    photo: "https://picsum.photos/id/1011/400/600"
+  },
+  {
+    name: "Noah, 31",
+    bio: "Nature & randonnées 🌿",
+    photo: "https://picsum.photos/id/1012/400/600"
+  }
+];
 
+let index = 0;
+
+// éléments
+const card = document.getElementById("card");
+const img = document.getElementById("photo");
+const nameEl = document.getElementById("name");
+const bioEl = document.getElementById("bio");
+
+// charger profil
+function loadProfile() {
+  const p = profiles[index];
+  img.src = p.photo;
+  nameEl.textContent = p.name;
+  bioEl.textContent = p.bio;
+}
+loadProfile();
+
+// swipe logic
 let startX = 0;
 let currentX = 0;
 
-/* ✅ TOUCH (mobile) */
-card.addEventListener("touchstart", e => {
-  startX = e.touches[0].clientX;
-  card.style.transition = "none";
-});
-
-card.addEventListener("touchmove", e => {
-  currentX = e.touches[0].clientX - startX;
-  card.style.transform =
-    `translateX(${currentX}px) rotate(${currentX / 12}deg)`;
-});
-
-card.addEventListener("touchend", () => {
-  handleRelease();
-});
-
-/* ✅ MOUSE (PC) */
-card.addEventListener("mousedown", e => {
-  startX = e.clientX;
-  card.style.transition = "none";
-
-  document.onmousemove = e => {
-    currentX = e.clientX - startX;
-    card.style.transform =
-      `translateX(${currentX}px) rotate(${currentX / 12}deg)`;
-  };
-
-  document.onmouseup = () => {
-    document.onmousemove = null;
-    document.onmouseup = null;
-    handleRelease();
-  };
-});
-
 function handleRelease() {
-  if (currentX > 120) {
-    swipe("right");
-  } else if (currentX < -120) {
-    swipe("left");
-  } else {
-    reset();
-  }
+  if (currentX > 120) swipe("right");
+  else if (currentX < -120) swipe("left");
+  else reset();
 }
 
 function swipe(direction) {
@@ -123,6 +123,8 @@ function swipe(direction) {
     direction === "right"
       ? "translateX(1000px) rotate(30deg)"
       : "translateX(-1000px) rotate(-30deg)";
+
+  setTimeout(nextProfile, 300);
 }
 
 function reset() {
@@ -130,7 +132,5 @@ function reset() {
   card.style.transform = "translateX(0)";
   currentX = 0;
 }
-</script>
 
-</body>
-</
+function nextProfile() {
