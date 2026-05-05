@@ -141,3 +141,27 @@ auth.onAuthStateChanged(user => {
     console.log("❌ Aucun utilisateur connecté");
   }
 });
+function login() {
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("loginPassword").value;
+  const message = document.getElementById("loginMessage");
+
+  if (!email || !password) {
+    message.textContent = "Veuillez remplir tous les champs";
+    message.style.color = "red";
+    return;
+  }
+
+  auth.signInWithEmailAndPassword(email, password)
+    .then(userCredential => {
+      message.style.color = "green";
+      message.textContent = "✅ Connecté avec succès";
+      console.log("Utilisateur connecté :", userCredential.user.email);
+    })
+    .catch(error => {
+      message.style.color = "red";
+      message.textContent = error.message;
+      console.error(error);
+    });
+}
+``
