@@ -256,6 +256,17 @@ card.addEventListener("mousedown", e => {
 document.getElementById("likeBtn").onclick = () => swipe("right");
 document.getElementById("nopeBtn").onclick = () => swipe("left");
 </script>
+<div id="authBox" style="background:white;padding:20px;border-radius:10px;margin-bottom:20px;">
+  <h3>Créer un compte</h3>
 
+  <input id="email" type="email" placeholder="Email" style="width:100%;padding:8px;margin:5px 0;">
+  <input id="password" type="password" placeholder="Mot de passe" style="width:100%;padding:8px;margin:5px 0;">
+
+  <button onclick="register()" style="width:100%;padding:10px;margin-top:10px;">
+    S’inscrire
+  </button>
+
+  <p id="authMessage"></p>
+</div>
 </body>
 </html>
