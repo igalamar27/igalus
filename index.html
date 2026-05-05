@@ -268,5 +268,28 @@ document.getElementById("nopeBtn").onclick = () => swipe("left");
 
   <p id="authMessage"></p>
 </div>
+  <div id="loginBox" style="background:white;padding:20px;border-radius:10px;margin-bottom:20px;">
+  <h3>Se connecter</h3>
+
+  <input
+    id="loginEmail"
+    type="email"
+    placeholder="Email"
+    style="width:100%;padding:8px;margin:5px 0;"
+  >
+
+  <input
+    id="loginPassword"
+    type="password"
+    placeholder="Mot de passe"
+    style="width:100%;padding:8px;margin:5px 0;"
+  >
+
+  <button onclick="login()" style="width:100%;padding:10px;margin-top:10px;">
+    Se connecter
+  </button>
+
+  <p id="loginMessage"></p>
+</div>
 </body>
 </html>
