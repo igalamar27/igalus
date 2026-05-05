@@ -5,27 +5,108 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Igalus</title>
 
-  <!-- Lien CSS correct -->
-  <link rel="stylesheet" href="style.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f2f2f2;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .card {
+      width: 90%;
+      max-width: 400px;
+      height: 70vh;
+      border-radius: 20px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+
+      /* 🔑 indispensable mobile */
+      touch-action: none;
+    }
+
+    .card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
+
+    .info {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      padding: 20px;
+      color: white;
+      background: linear-gradient(
+        to top,
+        rgba(0,0,0,0.8),
+        rgba(0,0,0,0)
+      );
+      pointer-events: none;
+    }
+  </style>
 </head>
 <body>
 
-  <div class="app">
-
-    <div class="card">
-      <img src="https://picsum.photos/400/600" alt="Photo de profil">
-      <div class="info">
-        <h2>Emma, 25</h2>
-        <p>Aime voyager et le café ☕</p>
-      </div>
+  <div id="card" class="card">
+    <img src="https://picsum.photos/400/600" alt="profil">
+    <div class="info">
+      <h2>Emma, 25</h2>
+      <p>Aime voyager ☕</p>
     </div>
-
-    <div class="buttons">
-      <button class="nope">❌</button>
-      <button class="like">❤️</button>
-    </div>
-
   </div>
+
+  <script>
+    const card = document.getElementById("card");
+
+    let startX = 0;
+    let currentX = 0;
+
+    card.addEventListener("touchstart", e => {
+      startX = e.touches[0].clientX;
+      card.style.transition = "none";
+    });
+
+    card.addEventListener("touchmove", e => {
+      currentX = e.touches[0].clientX - startX;
+      card.style.transform =
+        `translateX(${currentX}px) rotate(${currentX / 10}deg)`;
+    });
+
+    card.addEventListener("touchend", () => {
+      if (currentX > 100) {
+        swipe("right");
+      } else if (currentX < -100) {
+        swipe("left");
+      } else {
+        reset();
+      }
+    });
+
+    function swipe(direction) {
+      card.style.transition = "transform 0.3s";
+      card.style.transform =
+        direction === "right"
+          ? "translateX(1000px) rotate(30deg)"
+          : "translateX(-1000px) rotate(-30deg)";
+    }
+
+    function reset() {
+      card.style.transition = "transform 0.3s";
+      card.style.transform = "translateX(0)";
+      currentX = 0;
+    }
+  </script>
 
 </body>
 </html>
