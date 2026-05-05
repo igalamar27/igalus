@@ -16,6 +16,7 @@
 body {
   background: #f2f2f2;
   height: 100vh;
+  overflow: hidden; /* BLOQUE LE SCROLL */
 }
 
 .app {
@@ -33,7 +34,7 @@ body {
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 15px 30px rgba(0,0,0,0.3);
-  touch-action: pan-y;
+  touch-action: none; /* ✅ OBLIGATOIRE POUR LE SWIPE */
 }
 
 .card img {
@@ -68,17 +69,9 @@ body {
   font-size: 32px;
   border: none;
   margin: 0 25px;
-  cursor: pointer;
 }
-
-.like {
-  background: #ff4d6d;
-  color: white;
-}
-
-.nope {
-  background: #d3d3d3;
-}
+.like { background: #ff4d6d; color: white; }
+.nope { background: #d3d3d3; }
 </style>
 </head>
 
@@ -87,7 +80,7 @@ body {
 <div class="app">
 
   <div class="card" id="card">
-    <img src="https://picsum.photos/500/900" alt="Profil">
+    <img src="https://picsum.photos/500/900" alt="">
     <div class="info">
       <h2>Alex, 22</h2>
       <p>Étudiant en informatique</p>
@@ -112,60 +105,19 @@ function getX(e) {
   return e.touches ? e.touches[0].clientX : e.clientX;
 }
 
-function startDrag(e) {
+function start(e) {
   dragging = true;
   startX = getX(e);
   card.style.transition = "none";
 }
 
-function onDrag(e) {
+function move(e) {
   if (!dragging) return;
+  e.preventDefault(); // ✅ CLAIR ET INDISPENSABLE
   currentX = getX(e) - startX;
   card.style.transform =
     `translateX(${currentX}px) rotate(${currentX / 15}deg)`;
 }
 
-function endDrag() {
-  if (!dragging) return;
+function end() {
   dragging = false;
-  card.style.transition = "transform 0.3s";
-
-  if (currentX > 120) {
-    swipeRight();
-  } else if (currentX < -120) {
-    swipeLeft();
-  } else {
-    card.style.transform = "translateX(0) rotate(0)";
-  }
-
-  currentX = 0;
-}
-
-function swipeRight() {
-  card.style.transform = "translateX(1000px) rotate(25deg)";
-  console.log("LIKE ❤️");
-  setTimeout(resetCard, 300);
-}
-
-function swipeLeft() {
-  card.style.transform = "translateX(-1000px) rotate(-25deg)";
-  console.log("NOPE ❌");
-  setTimeout(resetCard, 300);
-}
-
-function resetCard() {
-  card.style.transition = "none";
-  card.style.transform = "translateX(0) rotate(0)";
-}
-
-card.addEventListener("touchstart", startDrag);
-card.addEventListener("touchmove", onDrag);
-card.addEventListener("touchend", endDrag);
-
-card.addEventListener("mousedown", startDrag);
-document.addEventListener("mousemove", onDrag);
-document.addEventListener("mouseup", endDrag);
-</script>
-
-</body>
-</html>
