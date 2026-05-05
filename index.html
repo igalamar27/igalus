@@ -64,7 +64,7 @@ body {
   pointer-events: none;
 }
 
-/* LABELS LIKE / NOPE */
+/* LABELS */
 .label {
   position: absolute;
   top: 20px;
@@ -141,11 +141,33 @@ button {
 </div>
 
 <script>
-// PROFILS
+// ✅ PROFILS — étudiants adultes, stylés (21+)
 const profiles = [
-  { name: "Emma, 25", bio: "Voyages et café ☕", photo: "https://picsum.photos/id/1027/400/600" },
-  { name: "Lucas, 29", bio: "Sport et musique 🎧", photo: "https://picsum.photos/id/1005/400/600" },
-  { name: "Sarah, 27", bio: "Art et photo 📸", photo: "https://picsum.photos/id/1011/400/600" }
+  {
+    name: "Alex, 23",
+    bio: "Master en design • Lifestyle urbain • Café lover",
+    photo: "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?auto=format&fit=crop&w=400&h=600"
+  },
+  {
+    name: "Camille, 24",
+    bio: "Études en communication • Mode & photographie",
+    photo: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&h=600"
+  },
+  {
+    name: "Jordan, 22",
+    bio: "École de commerce • Sport & voyages",
+    photo: "https://images.unsplash.com/photo-1527980965255-d3b416303d12?auto=format&fit=crop&w=400&h=600"
+  },
+  {
+    name: "Lina, 25",
+    bio: "Architecture • Art contemporain • City walks",
+    photo: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=400&h=600"
+  },
+  {
+    name: "Noah, 26",
+    bio: "Ingénierie • Tech vibes • Créatif",
+    photo: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=400&h=600"
+  }
 ];
 
 let index = 0;
@@ -168,7 +190,6 @@ loadProfile();
 let startX = 0;
 let currentX = 0;
 
-// GESTION SWIPE
 function move(x) {
   currentX = x - startX;
   card.style.transform =
@@ -206,7 +227,7 @@ function reset(hard = false) {
   nopeLabel.style.opacity = 0;
 }
 
-// MOBILE
+// Mobile
 card.addEventListener("touchstart", e => {
   startX = e.touches[0].clientX;
   card.style.transition = "none";
@@ -214,11 +235,10 @@ card.addEventListener("touchstart", e => {
 card.addEventListener("touchmove", e => move(e.touches[0].clientX));
 card.addEventListener("touchend", release);
 
-// DESKTOP
+// Desktop
 card.addEventListener("mousedown", e => {
   startX = e.clientX;
   card.style.transition = "none";
-
   document.onmousemove = e => move(e.clientX);
   document.onmouseup = () => {
     document.onmousemove = null;
@@ -227,7 +247,7 @@ card.addEventListener("mousedown", e => {
   };
 });
 
-// BOUTONS
+// Boutons
 document.getElementById("likeBtn").onclick = () => swipe("right");
 document.getElementById("nopeBtn").onclick = () => swipe("left");
 </script>
