@@ -3,24 +3,132 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Igalus – Test Inscription</title>
+<title>Igalus</title>
+
+<style>
+/* --- mise en forme minimale --- */
+body {
+  font-family: Arial, sans-serif;
+  background: #f2f2f2;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 400px;
+  margin: auto;
+  padding: 20px;
+}
+
+/* Carte */
+.card {
+  position: relative;
+  height: 450px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #ddd;
+  touch-action: none;
+}
+
+.card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.info {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 15px;
+  color: white;
+  background: linear-gradient(to top, rgba(0,0,0,.8), transparent);
+}
+
+/* Labels */
+.label {
+  position: absolute;
+  top: 20px;
+  padding: 6px 12px;
+  border: 3px solid;
+  font-weight: bold;
+  opacity: 0;
+}
+
+.like-label {
+  left: 20px;
+  color: green;
+  border-color: green;
+}
+
+.nope-label {
+  right: 20px;
+  color: red;
+  border-color: red;
+}
+
+/* Boutons */
+.buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 15px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 18px;
+}
+</style>
 </head>
+
 <body>
 
-<h2>Créer un compte</h2>
+<div class="container">
 
-<input id="email" type="email" placeholder="Email"><br><br>
-<input id="password" type="password" placeholder="Mot de passe"><br><br>
+  <!-- INSCRIPTION -->
+  <div id="authBox">
+    <h3>Créer un compte</h3>
+    <input id="email" type="email" placeholder="Email"><br><br>
+    <input id="password" type="password" placeholder="Mot de passe"><br><br>
+    <button onclick="register()">S’inscrire</button>
+    <p id="authMessage"></p>
+    <hr>
+  </div>
 
-<button id="registerBtn">S’inscrire</button>
+  <!-- CONNEXION -->
+  <div id="loginBox">
+    <h3>Se connecter</h3>
+    <input id="loginEmail" type="email" placeholder="Email"><br><br>
+    <input id="loginPassword" type="password" placeholder="Mot de passe"><br><br>
+    <button onclick="login()">Se connecter</button>
+    <p id="loginMessage"></p>
+    <hr>
+  </div>
 
-<p id="message"></p>
+  <!-- CARTE IGLALUS -->
+  <div id="card" class="card">
+    <img id="photo" src="">
+    <div id="likeLabel" class="label like-label">LIKE</div>
+    <div id="nopeLabel" class="label nope-label">NOPE</div>
+    <div class="info">
+      <h2 id="name"></h2>
+      <p id="bio"></p>
+    </div>
+  </div>
 
-<!-- ✅ Firebase SDK (OBLIGATOIRE) -->
+  <!-- BOUTONS -->
+  <div class="buttons">
+    <button id="nopeBtn">❌</button>
+    <button id="likeBtn">❤️</button>
+  </div>
+
+</div>
+
+<!-- ✅ FIREBASE SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
-<!-- ✅ Firebase CONFIG (MET TES VRAIES VALEURS) -->
+<!-- ✅ FIREBASE CONFIG (MET TES VRAIS CODES) -->
 <script>
   const firebaseConfig = {
     apiKey: "TA_API_KEY",
@@ -32,29 +140,10 @@
   };
 
   firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-
-  console.log("✅ Firebase chargé");
-
-  // 🔐 INSCRIPTION
-  document.getElementById("registerBtn").addEventListener("click", () => {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    const message = document.getElementById("message");
-
-    auth.createUserWithEmailAndPassword(email, password)
-      .then(() => {
-        message.textContent = "✅ Compte créé avec succès";
-        message.style.color = "green";
-      })
-      .catch(error => {
-        message.textContent = error.message;
-        message.style.color = "red";
-        console.error(error);
-      });
-  });
 </script>
+
+<!-- ✅ SCRIPT IGLALUS -->
+<script src="script.js"></script>
 
 </body>
 </html>
-``
