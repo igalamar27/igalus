@@ -90,3 +90,47 @@ card.addEventListener("touchend", () => {
 });
 
 /* ✅ MOUSE (PC) */
+card.addEventListener("mousedown", e => {
+  startX = e.clientX;
+  card.style.transition = "none";
+
+  document.onmousemove = e => {
+    currentX = e.clientX - startX;
+    card.style.transform =
+      `translateX(${currentX}px) rotate(${currentX / 12}deg)`;
+  };
+
+  document.onmouseup = () => {
+    document.onmousemove = null;
+    document.onmouseup = null;
+    handleRelease();
+  };
+});
+
+function handleRelease() {
+  if (currentX > 120) {
+    swipe("right");
+  } else if (currentX < -120) {
+    swipe("left");
+  } else {
+    reset();
+  }
+}
+
+function swipe(direction) {
+  card.style.transition = "transform 0.3s";
+  card.style.transform =
+    direction === "right"
+      ? "translateX(1000px) rotate(30deg)"
+      : "translateX(-1000px) rotate(-30deg)";
+}
+
+function reset() {
+  card.style.transition = "transform 0.3s";
+  card.style.transform = "translateX(0)";
+  currentX = 0;
+}
+</script>
+
+</body>
+</
