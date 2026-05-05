@@ -116,3 +116,20 @@ card.addEventListener("mousedown", e => {
 // Buttons
 likeBtn.onclick = () => swipe("right");
 nopeBtn.onclick = () => swipe("left");
+function register() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const message = document.getElementById("authMessage");
+
+  auth.createUserWithEmailAndPassword(email, password)
+    .then(userCredential => {
+      message.style.color = "green";
+      message.textContent = "✅ Compte créé avec succès";
+      console.log("Utilisateur créé :", userCredential.user.email);
+    })
+    .catch(error => {
+      message.style.color = "red";
+      message.textContent = error.message;
+      console.error(error);
+    });
+}
