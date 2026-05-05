@@ -1,94 +1,74 @@
-/* =========================================
-   I G A L U S  –  SCRIPT COMPLET
-   Swipe + Firebase Auth
-========================================= */
-
-/* ========= PROFILS DE DÉMO ========= */
+/* ========= PROFILS ========= */
 const profiles = [
   {
     name: "Alex, 23",
-    bio: "Master design • Lifestyle urbain",
-    photo: "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?auto=format&fit=crop&w=400&h=600"
+    bio: "Design • Ville • Café",
+    photo: "https://images.unsplash.com/photo-1502685104226-ee32379fefbe"
   },
   {
     name: "Camille, 24",
-    bio: "Communication • Mode & photo",
-    photo: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&h=600"
+    bio: "Communication • Mode",
+    photo: "https://images.unsplash.com/photo-1544005313-94ddf0286df2"
   },
   {
     name: "Jordan, 22",
-    bio: "École de commerce • Sport & voyages",
-    photo: "https://images.unsplash.com/photo-1527980965255-d3b416303d12?auto=format&fit=crop&w=400&h=600"
+    bio: "Commerce • Sport",
+    photo: "https://images.unsplash.com/photo-1527980965255-d3b416303d12"
   }
 ];
 
 let index = 0;
 
 /* ========= DOM ========= */
-const card      = document.getElementById("card");
-const photo     = document.getElementById("photo");
-const nameEl    = document.getElementById("name");
-const bioEl     = document.getElementById("bio");
-
+const card = document.getElementById("card");
+const photo = document.getElementById("photo");
+const nameEl = document.getElementById("name");
+const bioEl = document.getElementById("bio");
 const likeLabel = document.getElementById("likeLabel");
 const nopeLabel = document.getElementById("nopeLabel");
+const likeBtn = document.getElementById("likeBtn");
+const nopeBtn = document.getElementById("nopeBtn");
+const authBox = document.getElementById("authBox");
+const loginBox = document.getElementById("loginBox");
 
-const likeBtn   = document.getElementById("likeBtn");
-const nopeBtn   = document.getElementById("nopeBtn");
-
-const authBox   = document.getElementById("authBox");
-const loginBox  = document.getElementById("loginBox");
-
-/* ========= FIREBASE AUTH ========= */
-// Firebase est déjà initialisé dans index.html
+/* ========= FIREBASE ========= */
 const auth = firebase.auth();
 
-/* ========= AFFICHER PROFIL ========= */
+/* ========= PROFIL ========= */
 function loadProfile() {
   const p = profiles[index];
   photo.src = p.photo;
   nameEl.textContent = p.name;
   bioEl.textContent = p.bio;
 }
-loadProfile();
 
 /* ========= SWIPE ========= */
-let startX = 0;
-let currentX = 0;
+let startX = 0, currentX = 0;
 const SWIPE_LIMIT = 120;
-
-function isLoggedIn() {
-  return auth.currentUser !== null;
-}
 
 function move(x) {
   currentX = x - startX;
-  card.style.transform =
-    `translateX(${currentX}px) rotate(${currentX / 12}deg)`;
-
-  likeLabel.style.opacity = currentX > 0 ? Math.min(currentX / 100, 1) : 0;
-  nopeLabel.style.opacity = currentX < 0 ? Math.min(-currentX / 100, 1) : 0;
+  card.style.transform = `translateX(${currentX}px) rotate(${currentX/12}deg)`;
+  likeLabel.style.opacity = currentX > 0 ? Math.min(currentX/100,1) : 0;
+  nopeLabel.style.opacity = currentX < 0 ? Math.min(-currentX/100,1) : 0;
 }
 
 function release() {
-  if (!isLoggedIn()) {
-    alert("Vous devez vous connecter pour swiper");
+  if (!auth.currentUser) {
+    alert("Connecte-toi pour swiper");
     reset();
     return;
   }
-
-  if (currentX > SWIPE_LIMIT) swipe("right");
-  else if (currentX < -SWIPE_LIMIT) swipe("left");
+  if (currentX > SWIPE_LIMIT) swipe();
+  else if (currentX < -SWIPE_LIMIT) swipe();
   else reset();
 }
 
-function swipe(direction) {
-  card.style.transition = "transform 0.3s";
-  card.style.transform =
-    direction === "right"
-      ? "translateX(1000px) rotate(30deg)"
-      : "translateX(-1000px) rotate(-30deg)";
-
+function swipe() {
+  card.style.transition = "transform .3s";
+  card.style.transform = currentX > 0
+    ? "translateX(1000px)"
+    : "translateX(-1000px)";
   setTimeout(() => {
     index = (index + 1) % profiles.length;
     reset(true);
@@ -96,89 +76,61 @@ function swipe(direction) {
   }, 300);
 }
 
-function reset(hard = false) {
-  card.style.transition = hard ? "none" : "transform 0.3s";
+function reset(hard=false) {
+  card.style.transition = hard ? "none" : "transform .3s";
   card.style.transform = "translateX(0)";
   currentX = 0;
   likeLabel.style.opacity = 0;
   nopeLabel.style.opacity = 0;
 }
 
-/* === Mobile === */
-card.addEventListener("touchstart", e => {
-  startX = e.touches[0].clientX;
-  card.style.transition = "none";
-});
+/* Touch + Mouse */
+card.addEventListener("touchstart", e => startX = e.touches[0].clientX);
 card.addEventListener("touchmove", e => move(e.touches[0].clientX));
 card.addEventListener("touchend", release);
-
-/* === Desktop === */
 card.addEventListener("mousedown", e => {
   startX = e.clientX;
-  card.style.transition = "none";
-
   document.onmousemove = e => move(e.clientX);
   document.onmouseup = () => {
     document.onmousemove = null;
-    document.onmouseup = null;
     release();
   };
 });
 
-/* === Boutons === */
-likeBtn.onclick = () => swipe("right");
-nopeBtn.onclick = () => swipe("left");
+likeBtn.onclick = () => swipe();
+nopeBtn.onclick = () => swipe();
 
-/* ========= INSCRIPTION ========= */
+/* ========= AUTH ========= */
 function register() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  const msg = document.getElementById("authMessage");
-
-  auth.createUserWithEmailAndPassword(email, password)
-    .then(() => {
-      msg.textContent = "✅ Compte créé";
-      msg.style.color = "green";
-    })
-    .catch(error => {
-      msg.textContent = error.message;
-      msg.style.color = "red";
-      console.error(error);
-    });
+  auth.createUserWithEmailAndPassword(
+    email.value, password.value
+  ).then(() =>
+    authMessage.textContent = "✅ Compte créé"
+  ).catch(e =>
+    authMessage.textContent = e.message
+  );
 }
 
-/* ========= CONNEXION ========= */
 function login() {
-  const email = document.getElementById("loginEmail").value;
-  const password = document.getElementById("loginPassword").value;
-  const msg = document.getElementById("loginMessage");
-
-  auth.signInWithEmailAndPassword(email, password)
-    .then(() => {
-      msg.textContent = "✅ Connecté";
-      msg.style.color = "green";
-    })
-    .catch(error => {
-      msg.textContent = error.message;
-      msg.style.color = "red";
-      console.error(error);
-    });
+  auth.signInWithEmailAndPassword(
+    loginEmail.value, loginPassword.value
+  ).then(() =>
+    loginMessage.textContent = "✅ Connecté"
+  ).catch(e =>
+    loginMessage.textContent = e.message
+  );
 }
 
-/* ========= DÉCONNEXION ========= */
-function logout() {
-  auth.signOut().then(() => location.reload());
-}
-
-/* ========= ÉTAT UTILISATEUR ========= */
+/* ========= ÉTAT ========= */
 auth.onAuthStateChanged(user => {
   if (user) {
-    console.log("✅ Connecté :", user.email);
-    authBox && (authBox.style.display = "none");
-    loginBox && (loginBox.style.display = "none");
+    authBox.style.display = "none";
+    loginBox.style.display = "none";
+    card.style.display = "block";
+    loadProfile();
   } else {
-    console.log("❌ Non connecté");
-    authBox && (authBox.style.display = "block");
-    loginBox && (loginBox.style.display = "block");
+    authBox.style.display = "block";
+    loginBox.style.display = "block";
+    card.style.display = "none";
   }
 });
