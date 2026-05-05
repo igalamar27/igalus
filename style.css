@@ -61,6 +61,11 @@ body {
   background: #ff4458;
   color: white;
 }
+.card img {
+  height: 350px;
+  object-fit: cover;
+}
+
 
 .nope {
   background: #ccc;
