@@ -3,293 +3,58 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Igalus</title>
-
-<style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: Arial, sans-serif;
-}
-<script src="script.js"></script>
- <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script> 
-body {
-  background: #f2f2f2;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.app {
-  width: 100%;
-  max-width: 360px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* CARTE */
-.card {
-  width: 100%;
-  height: 70vh;
-  background: #ddd;
-  border-radius: 20px;
-  overflow: hidden;
-  position: relative;
-  box-shadow: 0 15px 30px rgba(0,0,0,0.3);
-  touch-action: none;
-}
-
-/* IMAGE */
-.card img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  pointer-events: none;
-}
-
-/* INFOS */
-.info {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  padding: 20px;
-  color: white;
-  background: linear-gradient(
-    to top,
-    rgba(0,0,0,0.75),
-    rgba(0,0,0,0)
-  );
-  pointer-events: none;
-}
-
-/* LABELS */
-.label {
-  position: absolute;
-  top: 20px;
-  padding: 8px 14px;
-  border: 3px solid;
-  font-size: 22px;
-  font-weight: bold;
-  opacity: 0;
-}
-
-.like-label {
-  left: 20px;
-  color: #00c853;
-  border-color: #00c853;
-  transform: rotate(-15deg);
-}
-
-.nope-label {
-  right: 20px;
-  color: #ff1744;
-  border-color: #ff1744;
-  transform: rotate(15deg);
-}
-
-/* BOUTONS */
-.buttons {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  margin-top: 20px;
-}
-
-button {
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
-  border: none;
-  font-size: 30px;
-  cursor: pointer;
-}
-
-.nope {
-  background: #d3d3d3;
-}
-
-.like {
-  background: #ff4d6d;
-  color: white;
-}
-</style>
+<title>Igalus – Test Inscription</title>
 </head>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <body>
 
-<div class="app">
+<h2>Créer un compte</h2>
 
-  <div id="card" class="card">
-    <img id="photo">
+<input id="email" type="email" placeholder="Email"><br><br>
+<input id="password" type="password" placeholder="Mot de passe"><br><br>
 
-    <div id="likeLabel" class="label like-label">LIKE</div>
-    <div id="nopeLabel" class="label nope-label">NOPE</div>
+<button id="registerBtn">S’inscrire</button>
 
-    <div class="info">
-      <h2 id="name"></h2>
-      <p id="bio"></p>
-    </div>
-  </div>
+<p id="message"></p>
 
-  <div class="buttons">
-    <button id="nopeBtn" class="nope">❌</button>
-    <button id="likeBtn" class="like">❤️</button>
-  </div>
+<!-- ✅ Firebase SDK (OBLIGATOIRE) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
-</div>
-
+<!-- ✅ Firebase CONFIG (MET TES VRAIES VALEURS) -->
 <script>
-// ✅ PROFILS — étudiants adultes, stylés (21+)
-const profiles = [
-  {
-    name: "Alex, 23",
-    bio: "Master en design • Lifestyle urbain • Café lover",
-    photo: "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?auto=format&fit=crop&w=400&h=600"
-  },
-  {
-    name: "Camille, 24",
-    bio: "Études en communication • Mode & photographie",
-    photo: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&h=600"
-  },
-  {
-    name: "Jordan, 22",
-    bio: "École de commerce • Sport & voyages",
-    photo: "https://images.unsplash.com/photo-1527980965255-d3b416303d12?auto=format&fit=crop&w=400&h=600"
-  },
-  {
-    name: "Lina, 25",
-    bio: "Architecture • Art contemporain • City walks",
-    photo: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=400&h=600"
-  },
-  {
-    name: "Noah, 26",
-    bio: "Ingénierie • Tech vibes • Créatif",
-    photo: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=400&h=600"
-  }
-];
-
-let index = 0;
-
-const card = document.getElementById("card");
-const photo = document.getElementById("photo");
-const nameEl = document.getElementById("name");
-const bioEl = document.getElementById("bio");
-const likeLabel = document.getElementById("likeLabel");
-const nopeLabel = document.getElementById("nopeLabel");
-
-function loadProfile() {
-  const p = profiles[index];
-  photo.src = p.photo;
-  nameEl.textContent = p.name;
-  bioEl.textContent = p.bio;
-}
-loadProfile();
-
-let startX = 0;
-let currentX = 0;
-
-function move(x) {
-  currentX = x - startX;
-  card.style.transform =
-    `translateX(${currentX}px) rotate(${currentX / 12}deg)`;
-
-  likeLabel.style.opacity = currentX > 0 ? Math.min(currentX / 100, 1) : 0;
-  nopeLabel.style.opacity = currentX < 0 ? Math.min(-currentX / 100, 1) : 0;
-}
-
-function release() {
-  if (currentX > 120) swipe("right");
-  else if (currentX < -120) swipe("left");
-  else reset();
-}
-
-function swipe(direction) {
-  card.style.transition = "transform 0.3s";
-  card.style.transform =
-    direction === "right"
-      ? "translateX(1000px) rotate(30deg)"
-      : "translateX(-1000px) rotate(-30deg)";
-
-  setTimeout(() => {
-    index = (index + 1) % profiles.length;
-    reset(true);
-    loadProfile();
-  }, 300);
-}
-
-function reset(hard = false) {
-  card.style.transition = hard ? "none" : "transform 0.3s";
-  card.style.transform = "translateX(0)";
-  currentX = 0;
-  likeLabel.style.opacity = 0;
-  nopeLabel.style.opacity = 0;
-}
-
-// Mobile
-card.addEventListener("touchstart", e => {
-  startX = e.touches[0].clientX;
-  card.style.transition = "none";
-});
-card.addEventListener("touchmove", e => move(e.touches[0].clientX));
-card.addEventListener("touchend", release);
-
-// Desktop
-card.addEventListener("mousedown", e => {
-  startX = e.clientX;
-  card.style.transition = "none";
-  document.onmousemove = e => move(e.clientX);
-  document.onmouseup = () => {
-    document.onmousemove = null;
-    document.onmouseup = null;
-    release();
+  const firebaseConfig = {
+    apiKey: "TA_API_KEY",
+    authDomain: "TON_PROJET.firebaseapp.com",
+    projectId: "TON_PROJET",
+    storageBucket: "TON_PROJET.appspot.com",
+    messagingSenderId: "XXXX",
+    appId: "XXXX"
   };
-});
 
-// Boutons
-document.getElementById("likeBtn").onclick = () => swipe("right");
-document.getElementById("nopeBtn").onclick = () => swipe("left");
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+
+  console.log("✅ Firebase chargé");
+
+  // 🔐 INSCRIPTION
+  document.getElementById("registerBtn").addEventListener("click", () => {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const message = document.getElementById("message");
+
+    auth.createUserWithEmailAndPassword(email, password)
+      .then(() => {
+        message.textContent = "✅ Compte créé avec succès";
+        message.style.color = "green";
+      })
+      .catch(error => {
+        message.textContent = error.message;
+        message.style.color = "red";
+        console.error(error);
+      });
+  });
 </script>
-<div id="authBox" style="background:white;padding:20px;border-radius:10px;margin-bottom:20px;">
-  <h3>Créer un compte</h3>
 
-  <input id="email" type="email" placeholder="Email" style="width:100%;padding:8px;margin:5px 0;">
-  <input id="password" type="password" placeholder="Mot de passe" style="width:100%;padding:8px;margin:5px 0;">
-
-  <button onclick="register()" style="width:100%;padding:10px;margin-top:10px;">
-    S’inscrire
-  </button>
-
-  <p id="authMessage"></p>
-</div>
-  <div id="loginBox" style="background:white;padding:20px;border-radius:10px;margin-bottom:20px;">
-  <h3>Se connecter</h3>
-
-  <input
-    id="loginEmail"
-    type="email"
-    placeholder="Email"
-    style="width:100%;padding:8px;margin:5px 0;"
-  >
-
-  <input
-    id="loginPassword"
-    type="password"
-    placeholder="Mot de passe"
-    style="width:100%;padding:8px;margin:5px 0;"
-  >
-
-  <button onclick="login()" style="width:100%;padding:10px;margin-top:10px;">
-    Se connecter
-  </button>
-
-  <p id="loginMessage"></p>
-</div>
 </body>
 </html>
+``
