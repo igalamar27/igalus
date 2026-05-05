@@ -6,7 +6,7 @@
 }
 
 body {
-  background: #f3f3f3;
+  background: #f2f2f2;
   height: 100vh;
 }
 
@@ -20,7 +20,7 @@ body {
 }
 
 .card {
-  position: relative;
+  position: relative; /* OBLIGATOIRE */
   height: 75vh;
   border-radius: 20px;
   overflow: hidden;
@@ -34,7 +34,7 @@ body {
 }
 
 .info {
-  position: absolute;
+  position: absolute; /* LA CLÉ */
   bottom: 0;
   width: 100%;
   padding: 20px;
@@ -42,7 +42,7 @@ body {
   background: linear-gradient(
     to top,
     rgba(0,0,0,0.8),
-    rgba(0,0,0,0.0)
+    rgba(0,0,0,0)
   );
 }
 
